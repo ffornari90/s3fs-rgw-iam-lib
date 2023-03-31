@@ -1,0 +1,7 @@
+build/*
+config.h
+commit_hash
+package.json
+product_version
+rgw-sts-profile
+*.log

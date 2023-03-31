@@ -1,0 +1,2 @@
+const char commit_hash_version[]= "@COMMIT_HASH@";
+const char product_version[]	= "@PRODUCT_VERSION@";
