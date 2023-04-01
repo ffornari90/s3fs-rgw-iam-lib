@@ -1,7 +1,6 @@
 #!/bin/bash
 ROOTDIR=$(git rev-parse --show-toplevel)
 FILE="${ROOTDIR}/rgw-sts-profile"
-BUCKET_NAME=bucket
 if [ -f "$FILE" ]; then
   export $(grep -v '^#' $FILE | xargs -d '\n')
 fi

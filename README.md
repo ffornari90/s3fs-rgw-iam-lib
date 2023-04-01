@@ -57,6 +57,7 @@ CLIENT_ID=<client_id>
 CLIENT_SECRET=<client_secret>
 ENDPOINT_URL=https://radosgw.example.com
 REGION_NAME=<region_name>
+BUCKET_NAME=<bucket_name>
 ```
 Then, you can run s3fs-fuse in the following way:
 ```

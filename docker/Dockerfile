@@ -18,7 +18,7 @@ RUN mkdir -p $HOME/.aws && \
     mkdir -p $HOME/mnt/rgw && \
     echo "access:secret" > $HOME/.passwd-s3fs && \
     chmod 600 $HOME/.passwd-s3fs
-CMD s3fs bucket $HOME/mnt/rgw \
+CMD s3fs $BUCKET_NAME $HOME/mnt/rgw \
   -o use_path_request_style \
   -o url=$ENDPOINT_URL \
   -o endpoint=$REGION_NAME \
