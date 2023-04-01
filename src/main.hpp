@@ -12,8 +12,8 @@ namespace AwsDoc {
     namespace STS {
         bool assumeRoleWithWebIdentity(const Aws::String &roleArn,
                         const Aws::String &roleSessionName,
-                        const Aws::String &refreshId,
-                        const Aws::String &externalId,
+                        const Aws::String &refreshToken,
+                        const Aws::String &webIdentityToken,
                         Aws::Auth::AWSCredentials &credentials,
                         const Aws::Client::ClientConfiguration &clientConfig);
     }

@@ -14,33 +14,34 @@ Aws::String getOIDCAccessToken(const std::string &IAMHost, const std::string &re
 {
   CURL *curl;
   CURLcode res;
-  std::string readBuffer;
+  std::string readBufferDiscovery;
   curl_global_init(CURL_GLOBAL_ALL);
   curl = curl_easy_init();
   auto curl_config_url = IAMHost + "/.well-known/openid-configuration";
   if(curl) {
     curl_easy_setopt(curl, CURLOPT_URL, curl_config_url.c_str());
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
-    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
+    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBufferDiscovery);
     res = curl_easy_perform(curl);
     if(res != CURLE_OK)
       fprintf(stderr, "curl_easy_perform() failed: %s\n",
               curl_easy_strerror(res));
     curl_easy_cleanup(curl);
   }
-  curl_global_cleanup();
-  if (nlohmann::json::accept(readBuffer)) {
-    nlohmann::json data = nlohmann::json::parse(readBuffer);
+  if (nlohmann::json::accept(readBufferDiscovery)) {
+    nlohmann::json data = nlohmann::json::parse(readBufferDiscovery);
     if (data.contains("token_endpoint")) {
       std::string tokenEndpoint = data["token_endpoint"].get<std::string>();
-      auto curl_token_data = "grant_type=refersh_token&refresh_token=" + refreshToken;
+      auto curl_token_data = "grant_type=refresh_token&refresh_token=" + refreshToken;
+      curl = curl_easy_init();
+      std::string readBufferAccess;
       if(curl) {
         curl_easy_setopt(curl, CURLOPT_URL, tokenEndpoint.c_str());
         curl_easy_setopt(curl, CURLOPT_USERNAME, clientId.c_str());
         curl_easy_setopt(curl, CURLOPT_PASSWORD, clientSecret.c_str());
         curl_easy_setopt(curl, CURLOPT_POSTFIELDS, curl_token_data.c_str());
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
-        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBufferAccess);
         res = curl_easy_perform(curl);
         if(res != CURLE_OK)
           fprintf(stderr, "curl_easy_perform() failed: %s\n",
@@ -48,8 +49,9 @@ Aws::String getOIDCAccessToken(const std::string &IAMHost, const std::string &re
         curl_easy_cleanup(curl);
       }
       curl_global_cleanup();
-      if (nlohmann::json::accept(readBuffer)) {
-        nlohmann::json data = nlohmann::json::parse(readBuffer);
+      //printf("%s\n\n", readBufferAccess.c_str());
+      if (nlohmann::json::accept(readBufferAccess)) {
+        nlohmann::json data = nlohmann::json::parse(readBufferAccess);
         if (data.contains("access_token")) {
           Aws::String accessToken = data["access_token"].get<std::string>();
           return accessToken;

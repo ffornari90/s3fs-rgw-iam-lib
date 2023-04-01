@@ -31,7 +31,7 @@ bool AwsDoc::STS::assumeRoleWithWebIdentity(const Aws::String &roleArn,
         ofs << "aws_access_key_id = " + temp_credentials.GetAccessKeyId() + "\n";
         ofs << "aws_secret_access_key = " + temp_credentials.GetSecretAccessKey() + "\n";
         ofs << "aws_session_token = " + temp_credentials.GetSessionToken() + "\n";
-        ofs << "aws_refresh_token = " + refreshToken + "\n";
+        ofs << ";aws_refresh_token = " + refreshToken + "\n";
         ofs.close();
 
         credentials.SetAWSAccessKeyId(temp_credentials.GetAccessKeyId());

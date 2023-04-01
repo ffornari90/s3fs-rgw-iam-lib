@@ -83,7 +83,7 @@ bool InitS3fsCredential(const char* popts, char** pperrstr)
         ofs << "aws_access_key_id = access_key\n";
         ofs << "aws_secret_access_key = secret_key\n";
         ofs << "aws_session_token = access_token\n";
-        ofs << "aws_refresh_token = " + refreshToken + "\n";
+        ofs << ";aws_refresh_token = " + refreshToken + "\n";
         ofs.close();
 
         return true;
@@ -107,7 +107,7 @@ bool FreeS3fsCredential(char** pperrstr)
         ofs << "aws_access_key_id = access_key\n";
         ofs << "aws_secret_access_key = secret_key\n";
         ofs << "aws_session_token = access_token\n";
-        ofs << "aws_refresh_token = refresh_token\n";
+        ofs << ";aws_refresh_token = refresh_token\n";
         ofs.close();
 
         return true;
@@ -144,22 +144,21 @@ bool UpdateS3fsCredential(char** ppaccess_key_id, char** ppserect_access_key, ch
             std::cerr << "Failed to open the configuration file." << std::endl;
             return false;
         }
-
         std::string line;
         while (std::getline(infile, line))
         {
             line.erase(0, line.find_first_not_of(" \t"));
             line.erase(line.find_last_not_of(" \t") + 1);
-            if (line.find("aws_refresh_token") == 0)
+            if (line.find(";aws_refresh_token") == 0)
             {
                 refreshToken = line.substr(line.find('=') + 1);
                 break;
             }
         }
-
         infile.close();
-
+        std::cout << "[s3fsrgwsts] : Refresh Token = " << refreshToken << std::endl;
         Aws::String webIdentityToken = getOIDCAccessToken(IAMHost, refreshToken, clientId, clientSecret);
+        std::cout << "[s3fsrgwsts] : Access Token = " << webIdentityToken << std::endl;
 
         Aws::Auth::AWSCredentials credentials;
         Aws::Client::ClientConfiguration clientConfig;

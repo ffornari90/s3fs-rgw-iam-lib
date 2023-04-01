@@ -1,17 +1,18 @@
 FROM ffornari/s3fs-rgw-dependencies:latest
 ENV LD_LIBRARY_PATH=/usr/local/lib
-RUN git clone https://baltig.infn.it/fornari/s3fs-rgw-sts-lib.git && \
-    cd s3fs-rgw-sts-lib && cmake -S . -B build && \
+RUN git clone https://baltig.infn.it/fornari/s3fs-rgw-iam-lib.git && \
+    cd s3fs-rgw-iam-lib && cmake -S . -B build && \
     cd build && make install && cd ../.. && \
-    rm -rf s3fs-rgw-sts-lib
+    rm -rf s3fs-rgw-iam-lib
 RUN adduser --disabled-password --gecos '' docker
 USER docker
 RUN mkdir -p $HOME/.aws && \
-    printf '%s\n%s\n%s\n%s\n' \
+    printf '%s\n%s\n%s\n%s\n%s\n' \
     "[default]" \
-    "aws_access_key_id = access" \
-    "aws_secret_access_key = secret" \
-    "aws_session_token = token" \
+    "aws_access_key_id = access_key" \
+    "aws_secret_access_key = secret_key" \
+    "aws_session_token = access_token" \
+    ";aws_refresh_token = refresh_token" \
     > $HOME/.aws/credentials && \
     chmod 600 $HOME/.aws/credentials && \
     mkdir -p $HOME/mnt/rgw && \

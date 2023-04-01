@@ -1,18 +1,19 @@
 #!/bin/bash
 ROOTDIR=$(git rev-parse --show-toplevel)
 FILE="${ROOTDIR}/rgw-sts-profile"
-BUCKET_NAME=ffornari
+BUCKET_NAME=bucket
 if [ -f "$FILE" ]; then
   export $(grep -v '^#' $FILE | xargs -d '\n')
 fi
 echo "access:secret" > $HOME/.passwd-s3fs
 chmod 600 $HOME/.passwd-s3fs
 mkdir -p $HOME/.aws
-printf '%s\n%s\n%s\n%s\n' \
+printf '%s\n%s\n%s\n%s\n%s\n' \
   "[default]" \
-  "aws_access_key_id = access" \
-  "aws_secret_access_key = secret" \
-  "aws_session_token = token" \
+  "aws_access_key_id = access_key" \
+  "aws_secret_access_key = secret_key" \
+  "aws_session_token = access_token" \
+  ";aws_refresh_token = refresh_token" \
   > $HOME/.aws/credentials
 chmod 600 $HOME/.aws/credentials
 mkdir -p $HOME/mnt/rgw
