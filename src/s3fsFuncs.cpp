@@ -77,6 +77,10 @@ bool InitS3fsCredential(const char* popts, char** pperrstr)
         auto clientSecret = std::getenv("CLIENT_SECRET") ? std::getenv("CLIENT_SECRET") : "";
         auto home = std::getenv("HOME") ? std::getenv("HOME") : "/tmp";
         Aws::String refreshToken = getOIDCRefreshToken(IAMHost, clientId, clientSecret);
+        if(0 == strcasecmp(refreshToken.c_str(), "")){
+          std::cerr << "Failed to retrieve refresh token." << std::endl;
+        		return false;
+        }
         std::string s3fs_credfile = "/.aws/credentials";
         std::ofstream ofs(home + s3fs_credfile, std::ofstream::trunc);
         ofs << "[default]\n";
@@ -141,7 +145,7 @@ bool UpdateS3fsCredential(char** ppaccess_key_id, char** ppserect_access_key, ch
         std::ifstream infile(home + s3fs_credfile);
         if (!infile)
         {
-            std::cerr << "Failed to open the configuration file." << std::endl;
+            std::cerr << "Failed to open the AWS credentials file." << std::endl;
             return false;
         }
         std::string line;
@@ -156,9 +160,12 @@ bool UpdateS3fsCredential(char** ppaccess_key_id, char** ppserect_access_key, ch
             }
         }
         infile.close();
-        std::cout << "[s3fsrgwsts] : Refresh Token = " << refreshToken << std::endl;
-        Aws::String webIdentityToken = getOIDCAccessToken(IAMHost, refreshToken, clientId, clientSecret);
-        std::cout << "[s3fsrgwsts] : Access Token = " << webIdentityToken << std::endl;
+
+        Aws::String webIdentityToken = getOIDCAccessToken(IAMHost, endpointOverride, refreshToken, clientId, clientSecret);
+        if(0 == strcasecmp(webIdentityToken.c_str(), "")){
+          std::cerr << "Failed to retrieve access token." << std::endl;
+        		return false;
+        }
 
         Aws::Auth::AWSCredentials credentials;
         Aws::Client::ClientConfiguration clientConfig;

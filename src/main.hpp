@@ -25,7 +25,8 @@ void configureClient(Aws::Client::ClientConfiguration &clientConfig,
 
 Aws::String getOIDCRefreshToken(const std::string &IAMHost, const std::string &clientId,
                                 const std::string &clientSecret);
-Aws::String getOIDCAccessToken(const std::string &IAMHost, const std::string &refreshToken,
+Aws::String getOIDCAccessToken(const std::string &IAMHost, const std::string &RGWHost,
+                               const std::string &refreshToken,
                                const std::string &clientId, const std::string &clientSecret);
 
 extern "C" {

@@ -9,8 +9,9 @@ static size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *use
     return size * nmemb;
 }
 
-Aws::String getOIDCAccessToken(const std::string &IAMHost, const std::string &refreshToken,
-                               const std::string &clientId, const std::string &clientSecret)
+Aws::String getOIDCAccessToken(const std::string &IAMHost, const std::string &RGWHost,
+                               const std::string &refreshToken, const std::string &clientId,
+                               const std::string &clientSecret)
 {
   CURL *curl;
   CURLcode res;
@@ -32,7 +33,8 @@ Aws::String getOIDCAccessToken(const std::string &IAMHost, const std::string &re
     nlohmann::json data = nlohmann::json::parse(readBufferDiscovery);
     if (data.contains("token_endpoint")) {
       std::string tokenEndpoint = data["token_endpoint"].get<std::string>();
-      auto curl_token_data = "grant_type=refresh_token&refresh_token=" + refreshToken;
+      auto curl_token_data = "grant_type=refresh_token&refresh_token=" + refreshToken +
+                             "&audience=" + RGWHost;
       curl = curl_easy_init();
       std::string readBufferAccess;
       if(curl) {
@@ -49,7 +51,6 @@ Aws::String getOIDCAccessToken(const std::string &IAMHost, const std::string &re
         curl_easy_cleanup(curl);
       }
       curl_global_cleanup();
-      //printf("%s\n\n", readBufferAccess.c_str());
       if (nlohmann::json::accept(readBufferAccess)) {
         nlohmann::json data = nlohmann::json::parse(readBufferAccess);
         if (data.contains("access_token")) {
