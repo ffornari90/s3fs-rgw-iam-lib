@@ -2,7 +2,7 @@ FROM ubuntu:22.04
 RUN apt-get update \
  && apt-get install -y git cmake curl wget uuid-dev zlib1g-dev libpulse-dev \
     libcurl4-openssl-dev autotools-dev automake build-essential \
-    libxml2-dev pkg-config libssl-dev libfuse-dev fuse && \
+    libxml2-dev pkg-config libssl-dev libfuse-dev fuse fio && \
     apt-get clean
 RUN curl "https://ssl-tools.net/certificates/c2826e266d7405d34ef89762636ae4b36e86cb5e.pem" \
     -o /usr/local/share/ca-certificates/geant-ov-rsa-ca.crt && \
