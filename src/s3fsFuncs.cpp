@@ -75,8 +75,11 @@ bool InitS3fsCredential(const char* popts, char** pperrstr)
         auto IAMHost = std::getenv("IAM_HOST") ? std::getenv("IAM_HOST") : "localhost";
         auto clientId = std::getenv("CLIENT_ID") ? std::getenv("CLIENT_ID") : "";
         auto clientSecret = std::getenv("CLIENT_SECRET") ? std::getenv("CLIENT_SECRET") : "";
+        auto certFile = std::getenv("CERT_FILE") ? std::getenv("CERT_FILE") : "";
+        auto keyFile = std::getenv("KEY_FILE") ? std::getenv("KEY_FILE") : "";
+        auto cookiesFile = std::getenv("COOKIES_FILE") ? std::getenv("COOKIES_FILE") : "";
         auto home = std::getenv("HOME") ? std::getenv("HOME") : "/tmp";
-        Aws::String refreshToken = getOIDCRefreshToken(IAMHost, clientId, clientSecret);
+        Aws::String refreshToken = getOIDCRefreshToken(IAMHost, clientId, clientSecret, certFile, keyFile, cookiesFile);
         if(0 == strcasecmp(refreshToken.c_str(), "")){
           std::cerr << "Failed to retrieve refresh token." << std::endl;
         		return false;

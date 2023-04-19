@@ -23,8 +23,8 @@ void configureClient(Aws::Client::ClientConfiguration &clientConfig,
                      Aws::String &endpointOverride,
                      Aws::String &region);
 
-Aws::String getOIDCRefreshToken(const std::string &IAMHost, const std::string &clientId,
-                                const std::string &clientSecret);
+Aws::String getOIDCRefreshToken(const std::string &IAMHost, const std::string &clientId, const std::string &clientSecret,
+                                const std::string &certFile, const std::string &keyFile, const std::string &cookiesFile);
 Aws::String getOIDCAccessToken(const std::string &IAMHost, const std::string &RGWHost,
                                const std::string &refreshToken,
                                const std::string &clientId, const std::string &clientSecret);
