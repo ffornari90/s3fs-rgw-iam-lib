@@ -1,6 +1,6 @@
 #!/bin/bash
 ROOTDIR=$(git rev-parse --show-toplevel)
-FILE="${ROOTDIR}/rgw-sts-profile"
+FILE="${ROOTDIR}/profiles/rgw-sts-profile-$1"
 if [ -f "$FILE" ]; then
   docker run --name=s3fs-client$1 --rm \
            --net=host -d \
@@ -8,6 +8,8 @@ if [ -f "$FILE" ]; then
            --cap-add SYS_ADMIN \
            --privileged \
            --env-file $FILE \
+           -v "${ROOTDIR}/certs/certs-client$1/private.key":/home/docker/private.key \
+           -v "${ROOTDIR}/certs/certs-client$1/public.crt":/home/docker/public.crt \
            ffornari/s3fs-rgw-iam:auth-code \
            sh -c \
            "s3fs \$BUCKET_NAME \$HOME/mnt/rgw \

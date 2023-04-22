@@ -1,7 +1,10 @@
 build/*
+profiles/*
+certs/*
 config.h
 commit_hash
 package.json
 product_version
+create-profiles.sh
 rgw-sts-profile
 *.log
