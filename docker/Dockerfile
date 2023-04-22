@@ -1,7 +1,9 @@
 FROM ffornari/s3fs-rgw-dependencies:latest
 ENV LD_LIBRARY_PATH=/usr/local/lib
 RUN git clone https://baltig.infn.it/fornari/s3fs-rgw-iam-lib.git && \
-    cd s3fs-rgw-iam-lib && cmake -S . -B build && \
+    cd s3fs-rgw-iam-lib && \
+    git checkout authorization_code && \
+    cmake -S . -B build && \
     cd build && make install && cd ../.. && \
     rm -rf s3fs-rgw-iam-lib
 RUN adduser --disabled-password --gecos '' docker
