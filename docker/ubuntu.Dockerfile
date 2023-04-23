@@ -1,4 +1,4 @@
-FROM ffornari/s3fs-rgw-dependencies:latest
+FROM ffornari/s3fs-rgw-dependencies:ubuntu
 ENV LD_LIBRARY_PATH=/usr/local/lib
 RUN git clone https://baltig.infn.it/fornari/s3fs-rgw-iam-lib.git && \
     cd s3fs-rgw-iam-lib && \
