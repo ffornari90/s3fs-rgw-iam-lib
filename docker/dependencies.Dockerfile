@@ -1,16 +1,13 @@
-FROM ubuntu:22.04
-RUN apt-get update \
- && apt-get install -y git cmake curl wget uuid-dev zlib1g-dev libpulse-dev \
-    libcurl4-openssl-dev autotools-dev automake build-essential \
-    libxml2-dev pkg-config libssl-dev libfuse-dev fuse fio && \
-    apt-get clean
-RUN curl "https://ssl-tools.net/certificates/c2826e266d7405d34ef89762636ae4b36e86cb5e.pem" \
-    -o /usr/local/share/ca-certificates/geant-ov-rsa-ca.crt && \
-    wget -q -O - "https://dist.eugridpma.info/distribution/igtf/current/GPG-KEY-EUGridPMA-RPM-3" | apt-key add - && \
-    echo "deb http://repository.egi.eu/sw/production/cas/1/current egi-igtf core" > /etc/apt/sources.list.d/ca-repo.list && \
-    apt-get update && apt-get install -y ca-policy-egi-core && apt-get clean && \
-    for f in `find /etc/grid-security/certificates -type f -name '*.pem'`; \
-    do filename="${f##*/}"; cp $f /usr/local/share/ca-certificates/"${filename%.*}.crt"; done && \
+FROM alpine:latest
+RUN apk update && apk add git cmake curl wget util-linux-dev zlib-dev pulseaudio-dev \
+    curl-dev autoconf automake build-base \
+    libxml2-dev pkgconfig openssl-libs-static fuse fuse-dev fio && \
+    rm -rf /var/cache/apk/*
+RUN wget -O /usr/local/share/ca-certificates/geant-ov-rsa-ca.crt 'https://crt.sh/?d=2475254782' && \
+    wget 'http://repository.egi.eu/sw/production/cas/1/current/tgz/' && mkdir tgz && mkdir certificates && \
+    for tgz in $(cat index.html | awk -F'"' '{print $2}' | grep tar.gz); do wget 'http://repository.egi.eu/sw/production/cas/1/current/tgz/'$tgz -O tgz/$tgz; done && \
+    for tgz in $(ls tgz/); do tar xzf tgz/$tgz --strip-components=1 -C certificates/; done && \
+    for f in $(find certificates/ -type f -name '*.pem'); do filename="${f##*/}"; cp $f /usr/local/share/ca-certificates/"${filename%.*}.crt"; done && \
     update-ca-certificates
 RUN git clone --recurse-submodules https://github.com/aws/aws-sdk-cpp && \
     mkdir sdk_build && cd sdk_build && \
