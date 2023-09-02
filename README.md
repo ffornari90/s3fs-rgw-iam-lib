@@ -1,4 +1,5 @@
 # s3fs-rgw-iam-lib
+[![DOI](https://zenodo.org/badge/686307787.svg)](https://zenodo.org/badge/latestdoi/686307787)
 
 Authentication module using [AWS C++ SDK](https://github.com/aws/aws-sdk-cpp) for [s3fs-fuse](https://github.com/s3fs-fuse/s3fs-fuse/) to locally mount [Ceph RADOS Gateway](https://docs.ceph.com/en/latest/radosgw/index.html) buckets.
 
