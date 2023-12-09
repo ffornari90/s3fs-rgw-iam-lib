@@ -58,10 +58,16 @@ CLIENT_SECRET=<client_secret>
 ENDPOINT_URL=https://radosgw.example.com
 REGION_NAME=<region_name>
 BUCKET_NAME=<bucket_name>
+REDIRECT_URI=<redirect_uri>
+AUDIENCE=<audience>
+CERT_FILE=</path/to/public.crt>
+KEY_FILE=</path/to/private.key>
+COOKIES_FILE=</path/to/cookies.txt>
+OIDC_SCOPES=<oidc_scopes>
 ```
 Then, you can run s3fs-fuse in the following way:
 ```
-$ export $(grep -v '^#' rgw-sts-profile | xargs -d '\n')
+$ while IFS= read -r line; do export "$line"; done < <(grep -v '^#' rgw-sts-profile)
 $ s3fs <bucket> <mountpoint> <options...> -o credlib=librgw-sts.so -o credlib_opts=Off
 ```
 To specify this `s3fs-rgw-iam-lib` for s3fs, use the following options:

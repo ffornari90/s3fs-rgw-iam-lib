@@ -11,7 +11,7 @@ static size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *use
 
 Aws::String getOIDCAccessToken(const std::string &IAMHost, const std::string &RGWHost,
                                const std::string &refreshToken, const std::string &clientId,
-                               const std::string &clientSecret)
+                               const std::string &clientSecret, const std::string &audience)
 {
   CURL *curl;
   CURLcode res;
@@ -34,7 +34,7 @@ Aws::String getOIDCAccessToken(const std::string &IAMHost, const std::string &RG
     if (data.contains("token_endpoint")) {
       std::string tokenEndpoint = data["token_endpoint"].get<std::string>();
       auto curl_token_data = "grant_type=refresh_token&refresh_token=" + refreshToken +
-                             "&audience=" + RGWHost;
+                             "&audience=" + audience;
       curl = curl_easy_init();
       std::string readBufferAccess;
       if(curl) {

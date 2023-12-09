@@ -1,5 +1,6 @@
 #include "main.hpp"
 #include "config.h"
+#include <cstdio>
 #include <fstream>
 #include <string.h>
 
@@ -78,8 +79,10 @@ bool InitS3fsCredential(const char* popts, char** pperrstr)
         auto certFile = std::getenv("CERT_FILE") ? std::getenv("CERT_FILE") : "";
         auto keyFile = std::getenv("KEY_FILE") ? std::getenv("KEY_FILE") : "";
         auto cookiesFile = std::getenv("COOKIES_FILE") ? std::getenv("COOKIES_FILE") : "";
+        auto redirectUri = std::getenv("REDIRECT_URI") ? std::getenv("REDIRECT_URI") : "";
+        auto scopes = std::getenv("OIDC_SCOPES") ? std::getenv("OIDC_SCOPES") : "";
         auto home = std::getenv("HOME") ? std::getenv("HOME") : "/tmp";
-        Aws::String refreshToken = getOIDCRefreshToken(IAMHost, clientId, clientSecret, certFile, keyFile, cookiesFile);
+        Aws::String refreshToken = getOIDCRefreshToken(IAMHost, clientId, clientSecret, certFile, keyFile, cookiesFile, redirectUri, scopes);
         if(0 == strcasecmp(refreshToken.c_str(), "")){
           std::cerr << "Failed to retrieve refresh token." << std::endl;
         		return false;
@@ -117,6 +120,9 @@ bool FreeS3fsCredential(char** pperrstr)
         ofs << ";aws_refresh_token = refresh_token\n";
         ofs.close();
 
+        auto cookiesFile = std::getenv("COOKIES_FILE") ? std::getenv("COOKIES_FILE") : "";
+        std::remove(cookiesFile);
+
         return true;
 }
 
@@ -141,6 +147,7 @@ bool UpdateS3fsCredential(char** ppaccess_key_id, char** ppserect_access_key, ch
         auto home = std::getenv("HOME") ? std::getenv("HOME") : "/tmp";
         auto clientId = std::getenv("CLIENT_ID") ? std::getenv("CLIENT_ID") : "";
         auto clientSecret = std::getenv("CLIENT_SECRET") ? std::getenv("CLIENT_SECRET") : "";
+        auto audience = std::getenv("AUDIENCE") ? std::getenv("AUDIENCE") : "";
         Aws::String endpointOverride = std::getenv("ENDPOINT_URL") ? std::getenv("ENDPOINT_URL") : "localhost";
         Aws::String region = std::getenv("REGION_NAME") ? std::getenv("REGION_NAME") : "";
         Aws::String refreshToken = "";
@@ -164,7 +171,7 @@ bool UpdateS3fsCredential(char** ppaccess_key_id, char** ppserect_access_key, ch
         }
         infile.close();
 
-        Aws::String webIdentityToken = getOIDCAccessToken(IAMHost, endpointOverride, refreshToken, clientId, clientSecret);
+        Aws::String webIdentityToken = getOIDCAccessToken(IAMHost, endpointOverride, refreshToken, clientId, clientSecret, audience);
         if(0 == strcasecmp(webIdentityToken.c_str(), "")){
           std::cerr << "Failed to retrieve access token." << std::endl;
         		return false;

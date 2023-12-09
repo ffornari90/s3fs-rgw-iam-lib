@@ -24,10 +24,11 @@ void configureClient(Aws::Client::ClientConfiguration &clientConfig,
                      Aws::String &region);
 
 Aws::String getOIDCRefreshToken(const std::string &IAMHost, const std::string &clientId, const std::string &clientSecret,
-                                const std::string &certFile, const std::string &keyFile, const std::string &cookiesFile);
+                                const std::string &certFile, const std::string &keyFile, const std::string &cookiesFile,
+                                const std::string &redirectUri, const std::string &scopes);
 Aws::String getOIDCAccessToken(const std::string &IAMHost, const std::string &RGWHost,
-                               const std::string &refreshToken,
-                               const std::string &clientId, const std::string &clientSecret);
+                               const std::string &refreshToken, const std::string &clientId,
+                               const std::string &clientSecret, const std::string &audience);
 
 extern "C" {
 extern const char* VersionS3fsCredential(bool detail);
