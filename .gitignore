@@ -1,6 +1,7 @@
 build/*
 profiles/*
 certs/*
+conf/*
 config.h
 commit_hash
 package.json
