@@ -10,7 +10,7 @@ if [ -f "$FILE" ]; then
            --env-file $FILE \
            -v "${ROOTDIR}/certs/certs-client$1/private.key":/home/docker/private.key \
            -v "${ROOTDIR}/certs/certs-client$1/public.crt":/home/docker/public.crt \
-           ffornari/s3fs-rgw-iam:auth-code \
+           ffornari/s3fs-rgw-iam:auth-code-ubuntu \
            sh -c \
            "s3fs \$BUCKET_NAME \$HOME/mnt/rgw \
            -o use_cache=/tmp \
