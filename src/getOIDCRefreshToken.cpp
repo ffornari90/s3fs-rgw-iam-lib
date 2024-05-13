@@ -30,7 +30,7 @@ Aws::String getOIDCRefreshToken(const std::string &IAMHost, const std::string &c
               curl_easy_strerror(res));
     curl_easy_cleanup(curl);
   }
-  fprintf(stderr, "curl_response: %s\n", readBufferDiscovery);
+  fprintf(stderr, "curl_response: %s\n", readBufferDiscovery.c_str());
   if (nlohmann::json::accept(readBufferDiscovery)) {
     nlohmann::json data = nlohmann::json::parse(readBufferDiscovery);
     if (data.contains("device_authorization_endpoint")) {
