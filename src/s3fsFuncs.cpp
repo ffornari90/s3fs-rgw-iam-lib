@@ -1,6 +1,7 @@
 #include "main.hpp"
 #include "config.h"
 #include <fstream>
+#include <sstream>
 #include <string.h>
 
 static Aws::SDKOptions& GetSDKOptions()
@@ -76,7 +77,10 @@ bool InitS3fsCredential(const char* popts, char** pperrstr)
         auto clientId = std::getenv("CLIENT_ID") ? std::getenv("CLIENT_ID") : "";
         auto clientSecret = std::getenv("CLIENT_SECRET") ? std::getenv("CLIENT_SECRET") : "";
         auto home = std::getenv("HOME") ? std::getenv("HOME") : "/tmp";
-        Aws::String refreshToken = getOIDCRefreshToken(IAMHost, clientId, clientSecret);
+        auto sslVerify = std::getenv("SSL_VERIFY") ? std::getenv("SSL_VERIFY") : "true";
+        bool verifySSL;
+        std::istringstream(sslVerify) >> std::boolalpha >> verifySSL;
+        Aws::String refreshToken = getOIDCRefreshToken(IAMHost, clientId, clientSecret, verifySSL);
         if(0 == strcasecmp(refreshToken.c_str(), "")){
           std::cerr << "Failed to retrieve refresh token." << std::endl;
         		return false;
@@ -138,6 +142,9 @@ bool UpdateS3fsCredential(char** ppaccess_key_id, char** ppserect_access_key, ch
         auto home = std::getenv("HOME") ? std::getenv("HOME") : "/tmp";
         auto clientId = std::getenv("CLIENT_ID") ? std::getenv("CLIENT_ID") : "";
         auto clientSecret = std::getenv("CLIENT_SECRET") ? std::getenv("CLIENT_SECRET") : "";
+        auto sslVerify = std::getenv("SSL_VERIFY") ? std::getenv("SSL_VERIFY") : "true";
+        bool verifySSL;
+        std::istringstream(sslVerify) >> std::boolalpha >> verifySSL;
         Aws::String endpointOverride = std::getenv("ENDPOINT_URL") ? std::getenv("ENDPOINT_URL") : "localhost";
         Aws::String region = std::getenv("REGION_NAME") ? std::getenv("REGION_NAME") : "";
         Aws::String refreshToken = "";
@@ -161,7 +168,7 @@ bool UpdateS3fsCredential(char** ppaccess_key_id, char** ppserect_access_key, ch
         }
         infile.close();
 
-        Aws::String webIdentityToken = getOIDCAccessToken(IAMHost, endpointOverride, refreshToken, clientId, clientSecret);
+        Aws::String webIdentityToken = getOIDCAccessToken(IAMHost, endpointOverride, refreshToken, clientId, clientSecret, verifySSL);
         if(0 == strcasecmp(webIdentityToken.c_str(), "")){
           std::cerr << "Failed to retrieve access token." << std::endl;
         		return false;

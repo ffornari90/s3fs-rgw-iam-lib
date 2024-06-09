@@ -11,7 +11,7 @@ static size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *use
     return size * nmemb;
 }
 
-Aws::String getOIDCRefreshToken(const std::string &IAMHost, const std::string &clientId, const std::string &clientSecret)
+Aws::String getOIDCRefreshToken(const std::string &IAMHost, const std::string &clientId, const std::string &clientSecret, const bool &verifySSL)
 {
   CURL *curl;
   CURLcode res;
@@ -23,6 +23,7 @@ Aws::String getOIDCRefreshToken(const std::string &IAMHost, const std::string &c
     curl_easy_setopt(curl, CURLOPT_URL, curl_config_url.c_str());
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBufferDiscovery);
+    curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, verifySSL);
     res = curl_easy_perform(curl);
     if(res != CURLE_OK)
       fprintf(stderr, "curl_easy_perform() failed at openid configuration discovery: %s\n",
@@ -46,6 +47,7 @@ Aws::String getOIDCRefreshToken(const std::string &IAMHost, const std::string &c
           curl_easy_setopt(curl, CURLOPT_POSTFIELDS, curl_device_data.c_str());
           curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
           curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBufferDevice);
+          curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, verifySSL);
           res = curl_easy_perform(curl);
           if(res != CURLE_OK)
             fprintf(stderr, "curl_easy_perform() failed at device code initialization: %s\n",
@@ -88,6 +90,7 @@ Aws::String getOIDCRefreshToken(const std::string &IAMHost, const std::string &c
                     curl_easy_setopt(curl, CURLOPT_POSTFIELDS, curl_token_data.c_str());
                     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
                     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBufferRefresh);
+                    curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, verifySSL);
                     res = curl_easy_perform(curl);
                     if(res != CURLE_OK)
                       fprintf(stderr, "curl_easy_perform() failed at refresh token retrieval: %s\n",
