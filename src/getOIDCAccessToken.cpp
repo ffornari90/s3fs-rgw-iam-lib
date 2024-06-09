@@ -11,7 +11,7 @@ static size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *use
 
 Aws::String getOIDCAccessToken(const std::string &IAMHost, const std::string &RGWHost,
                                const std::string &refreshToken, const std::string &clientId,
-                               const std::string &clientSecret)
+                               const std::string &clientSecret, const bool &verifySSL)
 {
   CURL *curl;
   CURLcode res;
@@ -23,7 +23,7 @@ Aws::String getOIDCAccessToken(const std::string &IAMHost, const std::string &RG
     curl_easy_setopt(curl, CURLOPT_URL, curl_config_url.c_str());
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBufferDiscovery);
-    curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0);
+    curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, verifySSL);
     res = curl_easy_perform(curl);
     if(res != CURLE_OK)
       fprintf(stderr, "curl_easy_perform() failed: %s\n",
@@ -45,7 +45,7 @@ Aws::String getOIDCAccessToken(const std::string &IAMHost, const std::string &RG
         curl_easy_setopt(curl, CURLOPT_POSTFIELDS, curl_token_data.c_str());
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBufferAccess);
-        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 0);
+        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, verifySSL);
         res = curl_easy_perform(curl);
         if(res != CURLE_OK)
           fprintf(stderr, "curl_easy_perform() failed: %s\n",

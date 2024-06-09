@@ -5,3 +5,4 @@ package.json
 product_version
 rgw-sts-profile
 *.log
+.vscode/*
